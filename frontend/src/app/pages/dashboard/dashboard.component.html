@@ -1,0 +1,55 @@
+<!-- dashboard.component.html -->
+<main class="main-layout">
+<header class="dashboard-header">
+  <img src="assets/logo-redsalud.svg" alt="Logo RedSalud" class="logo">
+</header>
+  <div class="dashboard-container">
+  <nav class="sidebar">
+    <h2>Panel de Control</h2>
+    <button *ngIf="puedeVer('gestionar')" (click)="irAGestionar()">Gestionar</button>
+    <button *ngIf="puedeVer('asignar')" (click)="irAAsignar()">Asignar</button>
+    <button *ngIf="puedeVer('calendario')" (click)="irACalendario()">Calendario</button>
+    <a (click)="logout()" class="salir">Salir</a>
+  </nav>
+  <div class="dashboard-content">
+    <h2>¡Hola, {{ nombreUsuario }}!</h2>
+    <!-- Aquí va el contenido principal del dashboard -->
+    <div *ngIf="rol !== 'especialista'" class="stats-panel">
+      <div class="stat-card" (click)="irAAsignar()">
+        <span class="stat-title">Boxes totales</span>
+        <span class="stat-value">{{ cantidadBoxes }}</span>
+      </div>
+      <div class="stat-card" (click)="irAGestionar()">
+        <span class="stat-title">Boxes en mantenimiento</span>
+        <span class="stat-value">{{ cantidadBoxesMantenimiento }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">Especialistas</span>
+        <span class="stat-value">{{ cantidadEspecialistas }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">Especialidades</span>
+        <span class="stat-value">{{ cantidadEspecialidades }}</span>
+      </div>
+      <div class="stat-card" (click)="irAGestionar()">
+        <span class="stat-title">Reservas de boxes</span>
+        <span class="stat-value">{{ cantidadReservas }}</span>
+      </div>
+    </div>
+    <div *ngIf="rol === 'especialista'" class="stats-panel" (click)="irACalendario()">
+      <div class="stat-card">
+        <span class="stat-title">Reservas</span>
+        <span class="stat-value">{{ cantidadReservas }}</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-title">Especialidad</span>
+        <span class="stat-value">{{ especialidadNombre }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+<footer class="dashboard-footer">
+  <img src="assets/logo-redsalud-footer.svg" alt="Logo RedSalud" class="footer-logo">
+  <span class="footer-text">RedSalud &copy; {{ currentYear }} - Todos los derechos reservados</span>
+</footer>
+</main>

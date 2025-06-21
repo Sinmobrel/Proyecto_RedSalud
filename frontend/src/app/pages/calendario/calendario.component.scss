@@ -1,0 +1,203 @@
+.calendario-body {
+  background: #e6f5f5;
+}
+
+.dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background: #ffffff;
+  color: #fff;
+  padding: 0.5rem 2rem;
+  min-height: 80px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+
+  .header-nav {
+    display: flex;
+    gap: 1rem;
+    margin-right: 2rem;
+  }
+
+  .logo {
+    height: 56px;
+    width: auto;
+  }
+
+  .header-nav a {
+    color: #000000;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 0.5rem 1.2rem;
+    border-radius: 4px;
+    transition: background 0.2s, color 0.2s;
+    cursor: pointer;
+
+    &.active {
+      background: #00a6a9;
+      color: #fff;
+    }
+
+    &:hover {
+      background: #00a6a9;
+      color: #ffffff;
+    }
+
+    &.salir {
+      font-weight: bold;
+
+      &:hover {
+        background: #ff0000;
+        color: #ffffff;
+      }
+    }
+  }
+}
+
+.calendario-container {
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem 1rem 0 1rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.filtros-calendario {
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-end;
+  width: 100%;
+  overflow-x: auto;
+
+  form {
+    display: flex;
+    gap: 2rem;
+    flex-wrap: nowrap;
+
+    label {
+      display: flex;
+      flex-direction: column;
+      font-weight: 500;
+      gap: 0.25rem;
+      min-width: 180px;
+    }
+
+    input[type="date"],
+    select {
+      padding: 0.3rem 0.6rem;
+      border: 1px solid #bbb;
+      border-radius: 4px;
+      font-size: 1rem;
+      margin-top: 0.2rem;
+      min-width: 120px;
+      max-width: 200px;
+    }
+  }
+}
+
+.calendario-mes {
+  overflow-x: flex;
+  background: #e6f5f5;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  padding: 1rem 0.5rem;
+
+  table.calendario-semanal {
+    width: 100%;
+    min-width: 700px;
+    border-collapse: collapse;
+    table-layout: fixed; // <-- ayuda a que las columnas se ajusten
+
+    th,
+    td {
+      border: 1px solid #e0e0e0;
+      text-align: center;
+      min-width: 80px;
+      height: 40px;
+      background: #f5f5f5;
+      position: relative;
+      padding: 0;
+    }
+
+    th {
+      background: #e0f2f1;
+      font-weight: 600;
+    }
+  }
+}
+
+.reserva-bloque {
+  background: #4caf50;
+  border-radius: 6px;
+  width: 80%;
+  position: absolute;
+  left: 10%;
+  top: 0;
+  z-index: 2;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  .reserva-info {
+    line-height: 1.2;
+    word-break: break-word;
+  }
+}
+
+td {
+  position: relative;
+  padding: 0;
+  height: 40px;
+  /* Cada celda tiene altura fija */
+}
+
+/* Modal styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 12px;
+  min-width: 320px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.18);
+}
+
+.dashboard-footer {
+  flex-shrink: 0;
+  width: 100%;
+  background: #006064;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 1rem 0;
+}
+
+.footer-logo {
+  height: 32px;
+  width: auto;
+}
+
+.footer-text {
+  font-size: 1rem;
+  letter-spacing: 0.5px;
+}

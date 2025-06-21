@@ -1,0 +1,176 @@
+<main class="main-layout">
+    <header class="dashboard-header">
+        <img src="assets/logo-redsalud.svg" alt="Logo RedSalud" class="logo">
+        <nav class="header-nav">
+            <a *ngIf="puedeVer('dashboard')" (click)="goTo('dashboard')"
+                [ngClass]="{'active': paginaActual === 'dashboard'}">Dashboard</a>
+            <a *ngIf="puedeVer('gestionar')" (click)="goTo('gestionar')"
+                [ngClass]="{'active': paginaActual === 'gestionar'}">Gestionar</a>
+            <a *ngIf="puedeVer('asignar')" (click)="goTo('asignar')"
+                [ngClass]="{'active': paginaActual === 'asignar'}">Asignar</a>
+            <a *ngIf="puedeVer('calendario')" (click)="goTo('calendario')"
+                [ngClass]="{'active': paginaActual === 'calendario'}">Calendario</a>
+            <a (click)="goTo('login')" [ngClass]="{'salir': true}">Salir</a>
+        </nav>
+    </header>
+    
+    <div class="Gestionar-container">
+        <h1>Gestión de Box</h1>
+        <div class="filters">
+            <label>
+                Especialidad
+                <select [(ngModel)]="especialidadSeleccionada">
+                    <option value="">Todas</option>
+                    <option *ngFor="let esp of especialidades" [value]="esp._id">{{ esp.nombre }}</option>
+                </select>
+            </label>
+            <label>
+                Piso
+                <select [(ngModel)]="pisoSeleccionado">
+                    <option value="">Todos</option>
+                    <option *ngFor="let piso of pisos" [value]="piso">{{ piso }}</option>
+                </select>
+            </label>
+            <label>
+                Fecha
+                <input type="date" [(ngModel)]="fechaSeleccionada" />
+            </label>
+            <button type="button" (click)="cargarBoxes()">Filtrar</button>
+            <button type="button" (click)="abrirModalMantenimiento()">Boxes en mantenimiento</button>
+        </div>
+
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Piso</th>
+                        <th>Box</th>
+                        <th>Especialidad</th>
+                        <th>Especialista</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let box of boxesFiltrados" (click)="selectedBox = box">
+                        <td>{{ box.piso }}</td>
+                        <td>{{ box.box }}</td>
+                        <td>{{ getNombreEspecialidad(box.especialidad) }}</td>
+                        <td>{{ box.especialista }}</td>
+                        <td>{{ box.estado }}</td>
+                        <td>
+                            <button type="button" (click)="abrirModal(box, $event)"
+                                [disabled]="box.estado === 'Mantenimiento'">Editar</button>
+                            <button type="button" (click)="eliminarReserva(box, $event)"
+                                [disabled]="box.estado === 'Mantenimiento'">Eliminar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal" *ngIf="modalAbierto">
+        <div class="modal-content">
+            <h2>Editar Reserva</h2>
+            <div *ngIf="mensajeError" class="mensaje-error">{{ mensajeError }}</div>
+            <form (ngSubmit)="guardarEdicion()">
+                <label>
+                    Especialidad:
+                    <select [(ngModel)]="modalReserva.especialidad" name="modalEspecialidad" required
+                        (change)="filtrarEspecialistas()">
+                        <option *ngFor="let esp of especialidades" [ngValue]="esp">{{ esp.nombre }}</option>
+                    </select>
+                </label>
+                <label>
+                    Especialista:
+                    <select [(ngModel)]="modalReserva.especialista" name="modalEspecialista" required>
+                        <option *ngFor="let esp of especialistasFiltrados" [value]="esp._id">{{ esp.nombre }}</option>
+                    </select>
+                </label>
+                <label>
+                    Fecha:
+                    <input type="date" [(ngModel)]="modalReserva.fecha" name="modalFecha" required>
+                </label>
+
+                <label>
+                    Hora inicio:
+                    <input type="time" [(ngModel)]="modalReserva.horaInicio" name="modalHoraInicio" required>
+                </label>
+
+                <label>
+                    Hora fin:
+                    <input type="time" [(ngModel)]="modalReserva.horaFin" name="modalHoraFin" required>
+                </label>
+                <div class="modal-actions">
+                    <button type="submit">Guardar</button>
+                    <button type="button" (click)="cerrarModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Modal de boxes en mantenimiento -->
+    <div class="modal-mantenimiento" *ngIf="modalMantenimientoAbierto">
+        <div class="modal-mantenimiento-content">
+            <h2>Boxes en Mantenimiento</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Piso</th>
+                        <th>Box</th>
+                        <th>Fecha inicio</th>
+                        <th>Fecha fin</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let box of boxesMantenimiento">
+                        <td>{{ box.piso }}</td>
+                        <td>{{ box.box }}</td>
+                        <td>{{ box.mantenimientoFechaInicio | date:'short' }}</td>
+                        <td>{{ box.mantenimientoFechaFin | date:'short' }}</td>
+                        <td>
+                            <button (click)="editarMantenimientoBox(box)">Editar</button>
+                            <button (click)="eliminarMantenimiento(box)">Eliminar</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="modal-actions">
+                <button type="button" (click)="cerrarModalMantenimiento()">Cerrar</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-editar-mantenimiento" *ngIf="modalEditarMantenimientoAbierto">
+        <div class="modal-editar-mantenimiento-content">
+            <h2>Editar Mantenimiento</h2>
+            <form (ngSubmit)="guardarEdicionMantenimiento()">
+                <label>
+                    Motivo:
+                    <input type="text" [(ngModel)]="modalMantenimiento.motivo" name="motivo" required>
+                </label>
+                <label>
+                    Fecha inicio:
+                    <input type="datetime-local" [(ngModel)]="modalMantenimiento.mantenimientoFechaInicio"
+                        name="fechaInicio" required>
+                </label>
+                <label>
+                    Fecha fin:
+                    <input type="datetime-local" [(ngModel)]="modalMantenimiento.mantenimientoFechaFin" name="fechaFin"
+                        required>
+                </label>
+                <div class="modal-actions">
+                    <button type="submit">Guardar</button>
+                    <button type="button" (click)="cerrarModalEditarMantenimiento()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="dashboard-footer">
+        <img src="assets/logo-redsalud-footer.svg" alt="Logo RedSalud" class="footer-logo">
+        <span class="footer-text">RedSalud &copy; {{ currentYear }} - Todos los derechos reservados</span>
+    </footer>
+</main>

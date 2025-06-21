@@ -1,0 +1,128 @@
+<header class="dashboard-header">
+    <img src="assets/logo-redsalud.svg" alt="Logo RedSalud" class="logo">
+    <nav class="header-nav">
+        <a *ngIf="puedeVer('dashboard')" (click)="goTo('dashboard')"
+            [ngClass]="{'active': paginaActual === 'dashboard'}">Dashboard</a>
+        <a *ngIf="puedeVer('gestionar')" (click)="goTo('gestionar')"
+            [ngClass]="{'active': paginaActual === 'gestionar'}">Gestionar</a>
+        <a *ngIf="puedeVer('asignar')" (click)="goTo('asignar')"
+            [ngClass]="{'active': paginaActual === 'asignar'}">Asignar</a>
+        <a *ngIf="puedeVer('calendario')" (click)="goTo('calendario')"
+            [ngClass]="{'active': paginaActual === 'calendario'}">Calendario</a>
+        <a (click)="goTo('login')" [ngClass]="{'salir': true}">Salir</a>
+    </nav>
+</header>
+<div class="asignar-container-background">
+    <div class="asignar-container">
+        <h1>Asignación de Box</h1>
+        <form>
+            <label>
+                Piso:
+                <select [(ngModel)]="pisoSeleccionado" name="pisoSeleccionado" (change)="filtrarBoxes()">
+                    <option value="">Todos</option>
+                    <option *ngFor="let piso of pisos" [value]="piso">{{ piso }}</option>
+                </select>
+            </label>
+
+        </form>
+
+        <div *ngFor="let grupo of boxesPorPisoFiltrados" class="grupo-piso">
+            <h2>Piso {{ grupo.piso }}</h2>
+            <div class="asignar-boxes">
+                <button *ngFor="let box of grupo.boxes" [ngClass]="{
+                'mantenimiento': box.estado === 'Mantenimiento',
+                'ocupado': box.estado === 'Ocupado',
+                'disponible': box.estado === 'Disponible',
+                'selected': box === boxSeleccionado
+            }" type="button" (click)="seleccionarBox(box)">
+                    {{ box.box }}
+                    <span *ngIf="box.estado === 'Ocupado'">({{ box.especialidad }})</span>
+                    <span *ngIf="box.estado === 'Mantenimiento'"></span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal de asignación -->
+        <div class="modal" *ngIf="showModal">
+            <form (ngSubmit)="confirmarAsignacion()">
+                <h2>Asignar Box {{ boxSeleccionado?.box }}</h2>
+                <div *ngIf="boxSeleccionado?.estado === 'Mantenimiento'" class="mensaje-error">
+                    Este box está en mantenimiento. No se puede asignar hasta que sea activado.
+                </div>
+                <div *ngIf="mensajeError" class="mensaje-error">
+                    {{ mensajeError }}
+                </div>
+                <label>
+                    Especialidad:
+                    <select [(ngModel)]="modalEspecialidad" name="modalEspecialidad" required
+                        (change)="filtrarEspecialistas()" [disabled]="boxSeleccionado?.estado === 'Mantenimiento'">
+                        <option *ngFor="let esp of especialidades" [value]="esp._id">{{ esp.nombre }}</option>
+                    </select>
+                </label>
+                <label>
+                    Especialista:
+                    <select [(ngModel)]="modalEspecialista" name="modalEspecialista" required
+                        [disabled]="boxSeleccionado?.estado === 'Mantenimiento'">
+                        <option *ngFor="let esp of especialistasFiltrados" [value]="esp._id">{{ esp.nombre }}</option>
+                    </select>
+                </label>
+                <label>
+                    Fecha:
+                    <input type="date" [(ngModel)]="modalFecha" name="modalFecha" required
+                        [disabled]="boxSeleccionado?.estado === 'Mantenimiento'" />
+                </label>
+                <label>
+                    Hora inicio:
+                    <input type="time" [(ngModel)]="modalHoraInicio" name="modalHoraInicio" required
+                        [disabled]="boxSeleccionado?.estado === 'Mantenimiento'" />
+                </label>
+                <label>
+                    Hora fin:
+                    <input type="time" [(ngModel)]="modalHoraFin" name="modalHoraFin" required
+                        [disabled]="boxSeleccionado?.estado === 'Mantenimiento'" />
+                </label>
+                <div class="modal-actions">
+                    <button type="submit" [disabled]="boxSeleccionado?.estado === 'Mantenimiento'">Asignar</button>
+                    <button type="button" (click)="cerrarModal()">Cancelar</button>
+                    <button type="button" *ngIf="boxSeleccionado?.estado !== 'Mantenimiento'"
+                        (click)="abrirMantenimientoModal(boxSeleccionado!)">
+                        Poner en Mantenimiento
+                    </button>
+                    <button type="button" *ngIf="boxSeleccionado?.estado === 'Mantenimiento'"
+                        (click)="toggleMantenimiento(boxSeleccionado)">
+                        Activar Box
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal modal-mantenimiento" *ngIf="showMantenimientoModal">
+            <form (ngSubmit)="confirmarMantenimiento()">
+                <h2>Poner en Mantenimiento</h2>
+                <div *ngIf="mensajeError" class="mensaje-error">{{ mensajeError }}</div>
+                <label>
+                    Motivo:
+                    <input type="text" [(ngModel)]="mantenimientoMotivo" name="motivo" required>
+                </label>
+                <label>
+                    <span>Fecha inicio:</span>
+                    <input type="date" [(ngModel)]="mantenimientoFechaInicio" name="fechaInicio" required>
+                    <input type="time" [(ngModel)]="mantenimientoHoraInicio" name="horaInicio" required>
+                </label>
+                <label>
+                    <span>Fecha fin:</span>
+                    <input type="date" [(ngModel)]="mantenimientoFechaFin" name="fechaFin" required>
+                    <input type="time" [(ngModel)]="mantenimientoHoraFin" name="horaFin" required>
+                </label>
+                <div class="modal-actions">
+                    <button type="submit">Guardar</button>
+                    <button type="button" (click)="cerrarMantenimientoModal()">Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<footer class="dashboard-footer">
+    <img src="assets/logo-redsalud-footer.svg" alt="Logo RedSalud" class="footer-logo">
+    <span class="footer-text">RedSalud &copy; {{ currentYear }} - Todos los derechos reservados</span>
+</footer>

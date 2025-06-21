@@ -1,0 +1,25 @@
+<main class="main-layout">
+  <header class="dashboard-header">
+    <img src="assets/logo-redsalud.svg" alt="Logo RedSalud" class="logo" />
+  </header>
+  <div class="login-container">
+    <div class="login-box">
+      <img src="assets/logo-redsalud.svg" alt="Logo RedSalud" class="login-logo" />
+      <form (ngSubmit)="login()">
+        <label for="rut">Rut</label>
+        <input type="text" id="rut" name="rut" [(ngModel)]="rut" required maxlength="10" pattern="^\d{7,8}-\d{1}$"
+          (input)="onRutInput($event)" placeholder="12345678-9">
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" [(ngModel)]="password" required>
+
+        <button type="submit">Sign In</button>
+      </form>
+      <a href="#">Forgot password?</a>
+      <p *ngIf="error" style="color:red">{{ error }}</p>
+    </div>
+  </div>
+  <footer class="dashboard-footer">
+    <img src="assets/logo-redsalud-footer.svg" alt="Logo RedSalud" class="footer-logo">
+    <span class="footer-text">RedSalud &copy; {{ currentYear }} - Todos los derechos reservados</span>
+  </footer>
+</main>

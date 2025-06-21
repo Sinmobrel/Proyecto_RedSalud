@@ -1,0 +1,81 @@
+<header class="dashboard-header">
+    <img src="assets/logo-redsalud.svg" alt="Logo RedSalud" class="logo">
+    <nav class="header-nav">
+        <a *ngIf="puedeVer('dashboard')" (click)="goTo('dashboard')" [ngClass]="{'active': paginaActual === 'dashboard'}">Dashboard</a>
+        <a *ngIf="puedeVer('gestionar')" (click)="goTo('gestionar')" [ngClass]="{'active': paginaActual === 'gestionar'}">Gestionar</a>
+        <a *ngIf="puedeVer('asignar')" (click)="goTo('asignar')" [ngClass]="{'active': paginaActual === 'asignar'}">Asignar</a>
+        <a *ngIf="puedeVer('calendario')" (click)="goTo('calendario')" [ngClass]="{'active': paginaActual === 'calendario'}">Calendario</a>
+        <a (click)="goTo('login')" [ngClass]="{'salir': true}">Salir</a>
+    </nav>
+</header>
+<body class="calendario-body">
+<!DOCTYPE html>
+<div class="calendario-container">
+    <div class="filtros-calendario">
+        <form>
+            <label>
+                Fecha:
+                <input type="date" name="fecha" [(ngModel)]="fechaSeleccionada">
+            </label>
+            <label *ngIf="rol !== 'especialista'">
+                Especialidad:
+                <select name="especialidad" [(ngModel)]="especialidadSeleccionada">
+                    <option value="">Todas</option>
+                    <option *ngFor="let esp of especialidades" [value]="esp._id">{{ esp.nombre }}</option>
+                </select>
+            </label>
+            <label *ngIf="rol !== 'especialista'">
+                Especialista:
+                <select name="especialista" [(ngModel)]="especialistaSeleccionado">
+                    <option value="">Todos</option>
+                    <option *ngFor="let est of especialistas" [value]="est._id">{{ est.nombre }}</option>
+                </select>
+            </label>
+        </form>
+    </div>
+</div>
+<div class="calendario-mes">
+    <table class="calendario-semanal">
+        <thead>
+            <tr>
+                <th>Hora</th>
+                <th *ngFor="let dia of diasSemana">{{ dia }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let hora of horasDelDia">
+                <td>{{ hora }}</td>
+                <td *ngFor="let dia of diasSemana; let i = index">
+                    <ng-container *ngIf="getReserva(i, hora) as reserva">
+                        <div class="reserva-bloque" *ngIf="esInicioReserva(reserva, hora)"
+                            [style.height.px]="calcularSpan(reserva) * 40" (click)="abrirModalReserva(reserva)">
+                            <span class="reserva-info">
+                                Piso: {{ reserva.box?.piso || reserva.piso }}<br>
+                                Box: {{ reserva.box?.box || reserva.boxNumero || reserva.box }}
+                            </span>
+                        </div>
+                    </ng-container>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<div class="modal" *ngIf="mostrarModal">
+    <div class="modal-content">
+        <h2>Detalle de Reserva</h2>
+        <p><strong>Piso:</strong> {{ reservaSeleccionada.box?.piso }}</p>
+        <p><strong>Box:</strong> {{ reservaSeleccionada.box?.box }}</p>
+        <p><strong>Especialidad:</strong> {{ reservaSeleccionada?.especialidadNombre }}</p>
+        <p><strong>Especialista:</strong> {{ reservaSeleccionada?.especialistaNombre }}</p>
+        <p><strong>Fecha:</strong> {{ reservaSeleccionada?.fechaInicio | date:'yyyy-MM-dd' }}</p>
+        <p><strong>Hora inicio:</strong> {{ reservaSeleccionada?.horaInicio }}</p>
+        <p><strong>Hora fin:</strong> {{ reservaSeleccionada?.horaFin }}</p>
+        <button (click)="cerrarModalReserva()">Cerrar</button>
+    </div>
+</div>
+</body>
+<footer class="dashboard-footer">
+    <img src="assets/logo-redsalud-footer.svg" alt="Logo RedSalud" class="footer-logo">
+    <span class="footer-text">RedSalud &copy; {{ currentYear }} - Todos los derechos reservados</span>
+</footer>
