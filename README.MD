@@ -34,10 +34,7 @@ Este sistema está compuesto por dos módulos principales:
 
 2. Asegúrate de que MongoDB esté corriendo en `localhost:27017`.
 
-3. Crea los usuarios administradores iniciales:
-   ```bash
-   node CreateUsers.js
-   ```
+3. Agrega los usuarios mediante MongoDB Compass(Inlcuidos en la carpeta Databases)
 
 4. Inicia el servidor backend:
    ```bash
@@ -63,6 +60,10 @@ Este sistema está compuesto por dos módulos principales:
    ```bash
    ng serve --proxy-config proxy.conf.json
    ```
+   O
+   ```bash
+   npx ng serve --proxy-config proxy.conf.json
+   ```
 
 4. Accede a la aplicación en:
    ```
@@ -83,9 +84,11 @@ Este sistema está compuesto por dos módulos principales:
 
 ## 👥 Provisión de Usuarios
 
-El sistema incluye un script (`CreateUsers.js`) que:
+Agrega las bases de datos de forma manual en mendiante MongoDB Compass
 
 - Crea usuarios administradores con contraseña por defecto `"admin"`.
+- Crea usuarios Coornadores con contraseña por defecto `"123456"`.
+- Crea usuarios especialistas con contraseña por defecto `"123456"`.
 - Evita duplicados verificando usuarios existentes.
 - Utiliza **bcrypt** para el hash de contraseñas.
 
@@ -98,16 +101,6 @@ El sistema incluye un script (`CreateUsers.js`) que:
 - Generar componentes:  
   ```bash
   ng generate component nombre-componente
-  ```
-
-- Ejecutar pruebas unitarias:  
-  ```bash
-  ng test
-  ```
-
-- Compilar para producción:  
-  ```bash
-  ng build
   ```
 
 ### Backend
